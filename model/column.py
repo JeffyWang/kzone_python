@@ -98,25 +98,26 @@ class Ktv(db.Model):
      __tablename__ = 'k_ktv'
 
      id = db.Column(db.Integer, primary_key=True)
-     address = db.Column()
-     average_price = db.Column()
-     business_area = db.Column()
-     business_id = db.Column()
-     create_time = db.Column()
-     district_id = db.Column()
-     introduction = db.Column()
-     latitude = db.Column()
-     longitude = db.Column()
-     name = db.Column()
-     phone_number = db.Column()
-     pictures = db.Column()
-     price = db.Column()
-     score = db.Column()
-     update_time = db.Column()
+     address = db.Column(db.String(512))
+     average_price = db.Column(db.Integer)
+     business_area = db.Column(db.String(32))
+     business_id = db.Column(db.String(32))
+     create_time = db.Column(db.DateTime)
+     district_id = db.Column(db.String(128))
+     introduction = db.Column(db.String(20480))
+     latitude = db.Column(db.String(32))
+     longitude = db.Column(db.String(32))
+     name = db.Column(db.String(128))
+     phone_number = db.Column(db.String(16))
+     pictures = db.Column(db.TEXT)
+     price = db.Column(db.String(32))
+     score = db.Column(db.String(32))
+     update_time = db.Column(db.DateTime)
+
 
 
 @swagger.model
-class Province():
+class Province(db.Model):
     __tablename__ = 'k_province'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -125,7 +126,7 @@ class Province():
 
 
 @swagger.model
-class Statistics():
+class Statistics(db.Model):
     __tablename__ = 'k_statistics'
 
     id = db.Column(db.Integer, primary_key=True)

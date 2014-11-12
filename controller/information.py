@@ -1,19 +1,32 @@
 __author__ = 'Administrator'
-import json
-from flask.ext.restful import Resource
-from flask import request
-from model.column import Information
-from model.db import ini_db
-from flask_restful_swagger import swagger
 from datetime import datetime
-from util.response import rep
+from base import *
+from model.column import Information
+from flask_restful_swagger import swagger
 
-db = ini_db()
+class InformationBase(Base):
+    def __init__(self):
+        Base.__init__(self, Information)
 
-def to_dict(item):
-    return dict(id = item.id, article = item.article, introduction = item.introduction, picture = item.picture, title = item.title, create_time = str(item.create_time), update_time = str(item.update_time))
+    def to_dict(self, information):
+        return dict(id = information.id, article = information.article, introduction = information.introduction, \
+            picture = information.picture, title = information.title, create_time = str(information.create_time), \
+            update_time = str(information.update_time))
 
-class Informations(Resource):
+    def update(self, information, request_data):
+        information.article = request_data['article']
+        information.introduction = request_data['introduction']
+        information.picture = request_data['picture']
+        information.title = request_data['title']
+        information.update_time = datetime.now()
+
+    def insert(self, request_data):
+        information = Information(request_data['article'], request_data['introduction'], request_data['picture'], \
+            request_data['title'])
+        return information
+
+
+class Informations(InformationBase, Bases):
     @swagger.operation(
         notes = 'Get all/an information',
         parameters=[
@@ -38,22 +51,11 @@ class Informations(Resource):
         ]
     )
     def get(self, id):
-        if id == 0:
-            try:
-                information = db.session.query(Information).order_by(Information.id.desc()).all()
-                information = [to_dict(item) for item in information]
-            except Exception as ex:
-                return rep(500, ex.message), 500
-        else:
-            try:
-                information = db.session.query(Information).get(id)
-                information = to_dict(information)
-            except Exception as ex:
-                return rep(404, u'not fount : %s' % ex.message), 404
-
-
-        return information
-
+        try:
+            a = Bases.get(self,id)
+        except Exception as ex:
+            print ex
+        return a
 
 
     @swagger.operation(
@@ -80,17 +82,7 @@ class Informations(Resource):
         ]
     )
     def delete(self, id):
-        information = db.session.query(Information).get(id)
-        if information is None:
-            return rep(404, u'not found'), 404
-
-        try:
-            db.session.delete(information)
-            db.session.commit()
-        except Exception as ex:
-            return rep(500, ex.message), 500
-
-        return rep(200, u'delete information success')
+        return Bases.delete(self, id)
 
     @swagger.operation(
         notes='Update a new information',
@@ -123,31 +115,10 @@ class Informations(Resource):
             }
         ])
     def put(self, id):
-        request_data = json.loads(request.data)
-
-        try:
-            information = db.session.query(Information).get(id)
-        except Exception as ex:
-             return rep(500, ex.message), 500
-
-        if information is None:
-            return rep(404, u'not found'), 404
-
-        information.article = request_data['article']
-        information.introduction = request_data['introduction']
-        information.picture = request_data['picture']
-        information.title = request_data['title']
-        information.update_time = datetime.now()
-
-        try:
-            db.session.commit()
-        except Exception as ex:
-            return rep(500, ex.message), 500
-
-        return rep(200, u'update information success')
+        return Bases.put(self, id)
 
 
-class InformationPages(Resource):
+class InformationPages(InformationBase, BasePage):
     @swagger.operation(
         notes = 'Get information for pages',
         nickname='get',
@@ -181,17 +152,10 @@ class InformationPages(Resource):
         ]
     )
     def get(self, page, size):
-        offset = page * size
-        try:
-            information_page = db.session.query(Information).order_by(Information.create_time.desc()).offset(offset).limit(size)
-            information_page = [to_dict(item) for item in information_page]
-        except Exception as ex:
-            return rep(500, ex.message), 500
-
-        return information_page
+        return BasePage.get(self, page, size)
 
 
-class InformationAdd(Resource):
+class InformationAdd(InformationBase, BaseAdd):
     @swagger.operation(
         notes='Add a new information',
         parameters=[
@@ -215,13 +179,4 @@ class InformationAdd(Resource):
             }
         ])
     def post(self):
-        request_data = json.loads(request.data)
-        information = Information(request_data['article'], request_data['introduction'], request_data['picture'], request_data['title'])
-
-        try:
-            db.session.add(information)
-            db.session.commit()
-        except Exception as ex:
-            return rep(500, ex.message), 500
-
-        return rep(200, u'add information success')
+        return BaseAdd.post(self)
