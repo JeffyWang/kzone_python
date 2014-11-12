@@ -20,7 +20,7 @@ class Informations(Resource):
             {
                 "name": "id",
                 "description": "An information id, put 0 can get all information",
-                "required": False,
+                "required": True,
                 "allowMultiple": False,
                 "dataType": int.__name__,
                 "paramType": "path"

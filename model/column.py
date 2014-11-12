@@ -6,6 +6,7 @@ from flask_restful_swagger import swagger
 
 db = ini_db()
 
+@swagger.model
 class Area(db.Model):
     __tablename__ = 'k_area'
 
@@ -14,6 +15,8 @@ class Area(db.Model):
     area_name = db.Column(db.String(16))
     reference = db.Column(db.String(16))
 
+
+@swagger.model
 class City(db.Model):
     __tablename__ = 'k_city'
 
@@ -22,6 +25,8 @@ class City(db.Model):
     city_name = db.Column(db.String(16))
     reference = db.Column(db.String(16))
 
+
+@swagger.model
 class Comment(db.Model):
     __tablename = 'k_comment'
 
@@ -47,6 +52,8 @@ class Comment(db.Model):
         self.user_name = user_name
         self.create_time = datetime.now()
 
+
+@swagger.model
 class Game(db.Model):
     __tablename = 'k_game'
     id = db.Column(db.Integer, primary_key=True)
@@ -85,6 +92,8 @@ class Information(db.Model):
         self.title = title
         self.update_time = datetime.now()
 
+
+@swagger.model
 class Ktv(db.Model):
      __tablename__ = 'k_ktv'
 
@@ -105,6 +114,8 @@ class Ktv(db.Model):
      score = db.Column()
      update_time = db.Column()
 
+
+@swagger.model
 class Province():
     __tablename__ = 'k_province'
 
@@ -112,6 +123,8 @@ class Province():
     province_id = db.Column(db.String(16))
     province_name = db.Column(db.String(16))
 
+
+@swagger.model
 class Statistics():
     __tablename__ = 'k_statistics'
 
@@ -133,6 +146,8 @@ class Statistics():
         self.user_id = user_id
         self.create_time = datetime.now()
 
+
+@swagger.model
 class User(db.Model):
     __tablename__ = 'k_user'
 
@@ -147,3 +162,13 @@ class User(db.Model):
     uuid = db.Column(db.String(100))
     picture = db.Column(db.String(256))
 
+    def __init__(self, device_id, favorite, password, phone_number, user_name, uuid, picture):
+        self.device_id = device_id
+        self.favorite = favorite
+        self.password = password
+        self.phone_number = phone_number
+        self.user_name = user_name
+        self.uuid = uuid
+        self.picture = picture
+        self.create_time = datetime.now()
+        self.update_time = datetime.now()
